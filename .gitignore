@@ -1,0 +1,30 @@
+# Binaries and test output
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go build cache / module cache artifacts
+vendor/
+
+# Coverage and profiling
+coverage.out
+coverage.html
+*.prof
+*.pprof
+cpu.out
+mem.out
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
