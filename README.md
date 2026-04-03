@@ -233,8 +233,11 @@ go test ./...
 go test -bench=. -benchmem ./...
 ```
 
-### Supporting This Work
-If Gauzer saves you from writing custom validation loggers, starring the repo helps other Go developers discover it. 
+## Supporting This Work
+If Gauzer saves you from writing custom validation loggers, starring the repo helps other Go developers discover it.
+
+## Sponsors
+If Gauzer saves your team time, consider [sponsoring its development](https://github.com/sponsors/trycatchkamal).
 
 ## License
 
