@@ -1601,5 +1601,51 @@ func TestNeField_Integration_Fail(t *testing.T) {
 	}
 }
 
+// ============================================================================
+// mask tests
+// ============================================================================
+
+type maskedStringForm struct {
+	Secret string `gauzer:"required,min=5,mask"`
+}
+
+// TestMaskRule ensures a failing masked field returns Value="***" instead of the raw value.
+func TestMaskRule(t *testing.T) {
+	mock := &mockEmitter{}
+	SetEmitter(mock)
+	defer ResetEmitter()
+
+	s := maskedStringForm{Secret: "ab"} // len=2 < min=5 → fail; mask applied
+	err := ValidateStruct(context.Background(), s)
+	if err == nil {
+		t.Fatal("expected error for secret 'ab' (len=2 < min=5), got nil")
+	}
+	ev, ok := err.(*DiagnosticEvent)
+	if !ok {
+		t.Fatalf("expected *DiagnosticEvent, got %T", err)
+	}
+	if ev.Value != "***" {
+		t.Errorf("Value = %q; want %q (raw value must be masked)", ev.Value, "***")
+	}
+	if mock.last == nil || mock.last.Value != "***" {
+		t.Errorf("emitted event Value = %q; want %q", mock.last.Value, "***")
+	}
+}
+
+// TestMaskRule_Pass ensures a passing masked field emits nothing.
+func TestMaskRule_Pass(t *testing.T) {
+	mock := &mockEmitter{}
+	SetEmitter(mock)
+	defer ResetEmitter()
+
+	s := maskedStringForm{Secret: "supersecret"} // len=11 >= min=5 → pass
+	if err := ValidateStruct(context.Background(), s); err != nil {
+		t.Errorf("expected nil for valid masked field, got %v", err)
+	}
+	if mock.calls.Load() != 0 {
+		t.Errorf("Emit called %d times; want 0 on happy path", mock.calls.Load())
+	}
+}
+
 // ensure strings import is used
 var _ = strings.TrimSpace

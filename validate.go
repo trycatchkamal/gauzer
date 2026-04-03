@@ -25,6 +25,7 @@ type fieldDef struct {
 	index        int    // reflect field index
 	rules        []Rule // rules parsed from the tag
 	omitempty    bool   // skip validation when field is a zero-value
+	masked       bool   // replace failing value with "***" in DiagnosticEvent
 	hasParentDep bool   // true if any rule needs the parent struct (e.g. eqfield)
 }
 
@@ -77,7 +78,7 @@ func ValidateStruct(ctx context.Context, obj any) error {
 			}
 			fieldParent = parent
 		}
-		if errEvent := validateField(ctx, emitter, value, def.rules, fieldParent); errEvent != nil {
+		if errEvent := validateField(ctx, emitter, value, def.rules, def.masked, fieldParent); errEvent != nil {
 			return errEvent
 		}
 	}
@@ -176,15 +177,16 @@ func buildFieldDefs(rt reflect.Type) ([]fieldDef, error) {
 		if tag == "" || tag == "-" {
 			continue
 		}
-		rules, omit, parentDep, err := parseTag(sf.Name, sf.Type, tag)
+		rules, omit, mask, parentDep, err := parseTag(sf.Name, sf.Type, tag)
 		if err != nil {
 			return nil, err
 		}
-		if len(rules) > 0 || omit {
+		if len(rules) > 0 || omit || mask {
 			defs = append(defs, fieldDef{
 				index:        i,
 				rules:        rules,
 				omitempty:    omit,
+				masked:       mask,
 				hasParentDep: parentDep,
 			})
 		}
@@ -195,7 +197,7 @@ func buildFieldDefs(rt reflect.Type) ([]fieldDef, error) {
 // parseTag converts a gauzer tag string into a slice of Rules.
 // Returns the rules, an omitempty flag, a hasParentDep flag, and any error.
 // Uses splitTagTokens to handle commas inside values (e.g. in regexp patterns).
-func parseTag(field string, ft reflect.Type, tag string) (rules []Rule, omitempty bool, hasParentDep bool, err error) {
+func parseTag(field string, ft reflect.Type, tag string) (rules []Rule, omitempty bool, masked bool, hasParentDep bool, err error) {
 	parts := splitTagTokens(tag)
 
 	// Locate the first "dive" separator.
@@ -222,6 +224,10 @@ func parseTag(field string, ft reflect.Type, tag string) (rules []Rule, omitempt
 		}
 		if part == "omitempty" {
 			omitempty = true
+			continue
+		}
+		if part == "mask" {
+			masked = true
 			continue
 		}
 		rule, rerr := buildRule(field, ft, part)
@@ -531,9 +537,12 @@ func buildRule(field string, ft reflect.Type, token string) (Rule, error) {
 
 // validateField is a pure function; emitter is injected from the top level.
 // parent is the containing struct value, non-nil only when a cross-field rule is present.
-func validateField(ctx context.Context, emitter Emitter, value any, rules []Rule, parent any) *DiagnosticEvent {
+func validateField(ctx context.Context, emitter Emitter, value any, rules []Rule, masked bool, parent any) *DiagnosticEvent {
 	for _, rule := range rules {
 		if errEvent := rule.Validate(value, parent); errEvent != nil {
+			if masked {
+				errEvent.Value = "***"
+			}
 			emitter.Emit(ctx, errEvent)
 			return errEvent
 		}

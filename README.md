@@ -146,6 +146,22 @@ The core `github.com/trycatchkamal/gauzer` module has **zero external dependenci
 
 ---
 
+## PII & Security
+
+By default, Gauzer logs the failing value to help SREs debug edge cases. However, for fields containing PII (emails, SSNs, API keys), you can use the `mask` modifier.
+
+The field will still be validated against your rules, but if it fails, the raw value will be replaced with `***` in your logs and OTel spans.
+
+```go
+type User struct {
+    Email    string `gauzer:"required,email,mask"` // Failing value becomes "***"
+    Password string `gauzer:"required,min=8,mask"` // Failing value becomes "***"
+    Age      int    `gauzer:"gte=18"`              // Failing value remains "16"
+}
+```
+
+---
+
 ## Supported Tags (v0.1.0)
 
 ### Presence
