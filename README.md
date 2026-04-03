@@ -233,6 +233,9 @@ go test ./...
 go test -bench=. -benchmem ./...
 ```
 
+### Supporting This Work
+If Gauzer saves you from writing custom validation loggers, starring the repo helps other Go developers discover it. 
+
 ## License
 
 MIT. See [LICENSE](LICENSE).
