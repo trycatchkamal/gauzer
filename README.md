@@ -146,6 +146,22 @@ The core `github.com/trycatchkamal/gauzer` module has **zero external dependenci
 
 ---
 
+## Why Structured Errors Matter for AI Tooling
+As teams integrate AI coding assistants (like Claude, Cursor, or Copilot) into their workflows, the quality of the context you paste into the prompt dictates the quality of the fix you get back.
+
+If you paste a standard validation string into an AI: `Error:Field validation for 'Age' failed on the 'gte' tag`
+
+The AI has to guess: What is the struct name? What is the exact constraint? What was the actual input? It might suggest a fix, but it will often hallucinate the wrong field or rule.
+
+Because Gauzer returns a strict `DiagnosticEvent`, you aren't pasting an error message, you are pasting machine-readable schema metadata:
+```go
+{  "field": "Age",  "constraint": "gte:18",  "value": "16",  "type": "int"}
+```
+
+When you hand this payload to an AI agent, it has zero ambiguity. It knows the exact field, the exact rule, and the exact failing value. It doesn't just suggest a fix, it can write the exact struct tag modification or input validation logic required to resolve it on the first attempt.
+
+For SREs building internal AIOps workflows, this same structure means you can reliably feed validation failures into LLMs for root-cause analysis without writing custom regex parsers to clean up log lines first.
+
 ## PII & Security
 
 By default, Gauzer logs the failing value to help SREs debug edge cases. However, for fields containing PII (emails, SSNs, API keys), you can use the `mask` modifier.
