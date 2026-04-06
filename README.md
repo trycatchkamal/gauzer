@@ -8,6 +8,16 @@ go get github.com/trycatchkamal/gauzer
 
 ---
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/trycatchkamal/gauzer.svg)](https://pkg.go.dev/github.com/trycatchkamal/gauzer)
+[![Go Report Card](https://goreportcard.com/badge/github.com/trycatchkamal/gauzer)](https://goreportcard.com/report/github.com/trycatchkamal/gauzer)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://github.com/trycatchkamal/gauzer/actions/workflows/go.yml/badge.svg)](https://github.com/trycatchkamal/gauzer/actions/workflows/go.yml)
+
+---
+
+## The Problem
+... (rest of your README continues here)
+
 ## The Problem
 
 Most validation libraries return errors as flat strings. That works fine until you're on-call trying to answer *"how often are users failing the age check, and with what values?"* in a production system.
@@ -220,9 +230,10 @@ type User struct {
 | `eqfield=OtherField` | Value must equal the named sibling field. |
 | `nefield=OtherField` | Value must not equal the named sibling field. |
 
-> **v0.2.0 roadmap:** `dive` into nested structs (currently works for slices of scalars and strings), and additional cross-field rules. If a tag token is unrecognized it is silently skipped, so future tags added in minor versions will not break existing code.
-
 ---
+
+## Roadmap
+Check out the [ROADMAP](https://github.com/trycatchkamal/gauzer/blob/main/ROADMAP.md) to see what's planned for v0.2.0, including OTel metrics, nested dive, and enterprise dependency injection.
 
 ## Contributing
 
