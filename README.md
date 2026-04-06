@@ -6,17 +6,12 @@ Struct validation for Go that natively speaks `log/slog` and OpenTelemetry - so 
 go get github.com/trycatchkamal/gauzer
 ```
 
----
-
 [![Go Reference](https://pkg.go.dev/badge/github.com/trycatchkamal/gauzer.svg)](https://pkg.go.dev/github.com/trycatchkamal/gauzer)
 [![Go Report Card](https://goreportcard.com/badge/github.com/trycatchkamal/gauzer)](https://goreportcard.com/report/github.com/trycatchkamal/gauzer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://github.com/trycatchkamal/gauzer/actions/workflows/go.yml/badge.svg)](https://github.com/trycatchkamal/gauzer/actions/workflows/go.yml)
 
 ---
-
-## The Problem
-... (rest of your README continues here)
 
 ## The Problem
 
